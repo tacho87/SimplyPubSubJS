@@ -2,7 +2,7 @@
   "name": "rehoard",
   "version": "0.0.1",
   "description": "ReHoard is a sub/pub state management tool for ReactJs and any other framework. ",
-  "main": "./src/rehoard.js",
+  "main": "./dist/rehoard.bundle.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

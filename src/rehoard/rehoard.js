@@ -2,7 +2,7 @@ import { ReHoardPubSub } from "./components/rehoardpubsub.js";
 
 
 
-class ReHoardInit {
+export default class ReHoard {
     constructor(settings) {
         this._reHoardPubSub = new ReHoardPubSub(settings);
         window.StateHub = this;
@@ -34,11 +34,3 @@ class ReHoardInit {
 }
 
 
-
-export default (function ReHoard(settings) {
-    if (!window.ReHoard) {
-        return new ReHoard(settings);
-    } else {
-        return window.ReHoard;
-    }
-})();

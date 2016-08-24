@@ -9,7 +9,8 @@ var APP_DIR = path.join(__dirname, '/src/');
 
 var config = {
     entry: {
-        rehoard: APP_DIR + "rehoard.js",
+        rehoard: APP_DIR + "import.js",
+
 
     },
     output: {
@@ -23,6 +24,7 @@ var config = {
                 include: APP_DIR,
                 loader: 'babel'
             }
+
         ]
     },
 

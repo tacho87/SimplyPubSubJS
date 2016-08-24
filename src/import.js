@@ -2,9 +2,9 @@
 import ReHoard from './rehoard/rehoard.js';
 
 export default ((settings) => {
-    if (!window.StateHub) {
-        return new StateHubInt(settings);
+    if (!window.ReHoard) {
+        return new ReHoard(settings);
     } else {
-        return window.StateHub;
+        return window.ReHoard;
     }
 })();

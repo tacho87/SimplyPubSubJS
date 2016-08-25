@@ -1,12 +1,14 @@
 {
   "name": "rehoard",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "ReHoard is a sub/pub state management tool for ReactJs and any other framework. ",
-  "main": "./dist/rehoard.js",
+  "main": "./dist/import/rehoard.js",
   "scripts": {
     "test": "No tests",
-    "build-Webpack": "webpack -p ",
-    "prepublish": "npm run build-Webpack"
+    "build-import": "babel src   --plugins transform-runtime --presets babel-preset-es2015,babel-preset-stage-0 --out-dir dist/import",
+    "build-js-dev": "webpack -d --config webpack.config.dev.js",
+    "build-js-min": "webpack -p --config webpack.config.min.js",
+    "prepublish": "npm run build-import | npm run build-js-dev | npm run build-js-min"
   },
   "repository": {
     "type": "git",

@@ -1,10 +1,10 @@
-import { ReHoardPubSub } from "./components/rehoardpubsub.js";
+import ReHoardPubSub from "./components/rehoardpubsub.js";
 
 
 
-module.exports = class ReHoard {
-    constructor(settings) {
-        this._reHoardPubSub = new ReHoardPubSub(settings);
+export default class ReHoard {
+    constructor() {
+        this._reHoardPubSub = new ReHoardPubSub();
         window.StateHub = this;
     }
     changeSettings(settings) {

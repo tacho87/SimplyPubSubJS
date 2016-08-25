@@ -1,10 +1,15 @@
 
 import ReHoard from './rehoard/rehoard.js';
-module.exports = ((settings) => {
+
+
+module.exports = (() => {
     if (!window.ReHoard) {
-        window.ReHoard = new ReHoard(settings);
+        window.ReHoard = new ReHoard();
         return window.ReHoard;
     } else {
         return window.ReHoard;
     }
 })();
+
+
+

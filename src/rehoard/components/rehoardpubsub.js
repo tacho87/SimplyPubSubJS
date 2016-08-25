@@ -1,10 +1,10 @@
 import ConsoleMessages from './consolemessages.js';
 
 
-export class ReHoardPubSub {
+export default class ReHoardPubSub {
 
-    constructor(settings) {
-        this.changeSettings(settings);
+    constructor() {
+        this.changeSettings(null);
         this._states = {};
         this._actions_history = [];
         this._storageName = "ReHoard";

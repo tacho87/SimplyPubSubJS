@@ -13,7 +13,7 @@ var config = {
     },
     output: {
         path: BUILD_DIR,
-        filename: '[name].min.js',
+        filename: '[name].js',
     },
     module: {
         loaders: [

@@ -257,6 +257,7 @@
 	                        unSubscribeCB: undefined
 	                    });
 	                    _this._a_history(state, "Listener Subscribed");
+	                    _this._notifysubscribers(state);
 	                    return {
 	                        v: {
 	                            unSubscribe: function unSubscribe() {
@@ -305,9 +306,7 @@
 	            var success = false;
 	            if (this._settings.undoRedo && stateName && this._states.hasOwnProperty(stateName)) {
 	                var state = this._states[stateName];
-	
 	                if (state.redoStack.length > 0) {
-	
 	                    state.undoStack.push({ value: state.value, action: state.actionReference });
 	                    var s = state.redoStack.pop();
 	                    state.value = s.value;
@@ -326,9 +325,7 @@
 	            var success = false;
 	            if (this._settings.undoRedo && stateName && this._states.hasOwnProperty(stateName)) {
 	                var state = this._states[stateName];
-	
 	                if (state.undoStack.length > 0) {
-	
 	                    state.redoStack.push({ value: state.value, action: state.actionReference });
 	                    var s = state.undoStack.pop();
 	                    state.value = s.value;

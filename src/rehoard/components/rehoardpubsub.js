@@ -80,6 +80,7 @@ export default class ReHoardPubSub {
                 unSubscribeCB: undefined
             });
             this._a_history(state, "Listener Subscribed");
+            this._notifysubscribers(state);
             return {
                 unSubscribe: () => { this._unSubscribe(stateName, index) }
             };
@@ -118,11 +119,7 @@ export default class ReHoardPubSub {
         let success = false;
         if (this._settings.undoRedo && stateName && this._states.hasOwnProperty(stateName)) {
             let state = this._states[stateName];
-
             if (state.redoStack.length > 0) {
-
-
-
                 state.undoStack.push({ value: state.value, action: state.actionReference });
                 let s = state.redoStack.pop();
                 state.value = s.value;
@@ -141,14 +138,7 @@ export default class ReHoardPubSub {
         let success = false;
         if (this._settings.undoRedo && stateName && this._states.hasOwnProperty(stateName)) {
             let state = this._states[stateName];
-
-
-
             if (state.undoStack.length > 0) {
-
-
-
-
                 state.redoStack.push({ value: state.value, action: state.actionReference });
                 let s = state.undoStack.pop();
                 state.value = s.value;

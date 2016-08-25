@@ -1,6 +1,6 @@
 {
   "name": "rehoard",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "ReHoard is a sub/pub state management tool for ReactJs and any other framework. ",
   "main": "./dist/import/rehoard.js",
   "scripts": {

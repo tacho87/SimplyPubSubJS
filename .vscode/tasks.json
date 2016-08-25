@@ -1,0 +1,42 @@
+
+/*Webpack task*/
+
+{
+	"version": "0.1.0",
+	"command": "${workspaceRoot}/node_modules/.bin/webpack",
+	"isShellCommand": true,
+	/*"args": [
+		"--display-modules",
+		"--progress"
+	],*/
+	"echoCommand": true,
+	"tasks": [
+		{
+			"args": [
+				"-d",
+				"--watch"
+			],
+			"suppressTaskName": true,
+			"taskName": "webpack dev watch",
+			"isBuildCommand": true
+		},
+			{
+			"args": [
+				"-d"
+			],
+			"suppressTaskName": true,
+			"taskName": "webpack dev",
+			"isBuildCommand": true
+		},
+		{
+			"args": [
+				"-p"
+			],
+			"suppressTaskName": true,
+			"taskName": "webpack dist",
+			"isBuildCommand": false
+		}
+	]
+}
+
+

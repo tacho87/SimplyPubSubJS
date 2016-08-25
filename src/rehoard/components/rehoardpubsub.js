@@ -120,6 +120,9 @@ export default class ReHoardPubSub {
             let state = this._states[stateName];
 
             if (state.redoStack.length > 0) {
+
+
+
                 state.undoStack.push({ value: state.value, action: state.actionReference });
                 let s = state.redoStack.pop();
                 state.value = s.value;
@@ -139,7 +142,13 @@ export default class ReHoardPubSub {
         if (this._settings.undoRedo && stateName && this._states.hasOwnProperty(stateName)) {
             let state = this._states[stateName];
 
+
+
             if (state.undoStack.length > 0) {
+
+
+
+
                 state.redoStack.push({ value: state.value, action: state.actionReference });
                 let s = state.undoStack.pop();
                 state.value = s.value;
@@ -206,6 +215,9 @@ export default class ReHoardPubSub {
             state.typeOfElement = typeof stateValue;
         }
         if (this._settings.undoRedo) {
+            if (state.undoStack.length >= 100) {
+                state.undoStack.splice(parseInt(0, parseInt(state.undoStack.length / 2)));
+            }
             state.undoStack.push({ value: state.value, action: state.actionReference });
             state.redoStack = [];
         }
@@ -300,7 +312,12 @@ export default class ReHoardPubSub {
                     if (date < new Date()) {
                         storage.removeItem(this._storageName);
                     } else {
-                        this._states = Object.assign({}, data.states);
+
+                        let s = Object.assign({}, data.states);
+                        for (let x in s) {
+                            s[x].subscribers = [];
+                        }
+                        this._states = s;
                     }
                 }
             } catch (e) {

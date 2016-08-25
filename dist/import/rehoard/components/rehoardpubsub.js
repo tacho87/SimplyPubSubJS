@@ -168,6 +168,7 @@ var ReHoardPubSub = function () {
                 var state = this._states[stateName];
 
                 if (state.redoStack.length > 0) {
+
                     state.undoStack.push({ value: state.value, action: state.actionReference });
                     var s = state.redoStack.pop();
                     state.value = s.value;
@@ -188,6 +189,7 @@ var ReHoardPubSub = function () {
                 var state = this._states[stateName];
 
                 if (state.undoStack.length > 0) {
+
                     state.redoStack.push({ value: state.value, action: state.actionReference });
                     var s = state.undoStack.pop();
                     state.value = s.value;
@@ -251,6 +253,9 @@ var ReHoardPubSub = function () {
                 state.typeOfElement = typeof stateValue === "undefined" ? "undefined" : (0, _typeof3.default)(stateValue);
             }
             if (this._settings.undoRedo) {
+                if (state.undoStack.length >= 100) {
+                    state.undoStack.splice(parseInt(0, parseInt(state.undoStack.length / 2)));
+                }
                 state.undoStack.push({ value: state.value, action: state.actionReference });
                 state.redoStack = [];
             }
@@ -353,7 +358,12 @@ var ReHoardPubSub = function () {
                         if (date < new Date()) {
                             storage.removeItem(this._storageName);
                         } else {
-                            this._states = (0, _assign2.default)({}, data.states);
+
+                            var s = (0, _assign2.default)({}, data.states);
+                            for (var x in s) {
+                                s[x].subscribers = [];
+                            }
+                            this._states = s;
                         }
                     }
                 } catch (e) {

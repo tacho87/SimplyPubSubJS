@@ -2,7 +2,7 @@ import { ReHoardPubSub } from "./components/rehoardpubsub.js";
 
 
 
-export default class ReHoard {
+module.exports = class ReHoard {
     constructor(settings) {
         this._reHoardPubSub = new ReHoardPubSub(settings);
         window.StateHub = this;

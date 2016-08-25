@@ -18,15 +18,15 @@ export class ReHoardPubSub {
 
         this._settings = {
             persistance: {
-                persist: (settings && settings.persist ? settings.persist : false),
+                persist: (settings && settings.persist ? settings.persist : true),
                 session: (settings && settings.session ? settings.session : true),
                 timeAlive: (settings && settings.timeAlive ? settings.timeAlive : 1)
             },
             undoRedo: (settings && settings.undoRedo ? settings.undoRedo : true),
             actionsHistory: (settings && settings.actionsHistory ? settings.actionsHistory : true),
-            actionsHistoryLimit: (settings && settings.actionsHistoryLimit ? settings.actionsHistoryLimit : 1000),
+            actionsHistoryLimit: (settings && settings.actionsHistoryLimit ? settings.actionsHistoryLimit : 100),
             typeMutable: (settings && settings.typeMutable ? settings.typeMutable : false),
-            production: (settings && settings.production ? settings.production : false)
+            production: (settings && settings.production ? settings.production : true)
         };
         this._debug = new ConsoleMessages(this._settings.production);
     }

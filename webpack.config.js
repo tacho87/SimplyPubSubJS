@@ -9,13 +9,13 @@ var APP_DIR = path.join(__dirname, '/src/');
 
 var config = {
     entry: {
-        rehoard: APP_DIR + "import.js",
+        rehoard: APP_DIR + "rehoard.js",
 
 
     },
     output: {
         path: BUILD_DIR,
-        filename: '[name].bundle.js',
+        filename: '[name].js',
     },
     module: {
         loaders: [

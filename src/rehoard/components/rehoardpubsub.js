@@ -90,7 +90,7 @@ export default class ReHoardPubSub {
         }
     }
 
-    getCurrentState(stateName) {
+    broadcastState(stateName) {
         let success = false;
         if (this._states.hasOwnProperty(stateName)) {
             let state = this._states[stateName];
@@ -101,6 +101,17 @@ export default class ReHoardPubSub {
         }
         return success;
     }
+
+
+    getCurrentValue(stateName) {
+        if (this._states.hasOwnProperty(stateName)) {
+            let state = this._states[stateName];
+            return state.value;
+        } else {
+            return null;
+        }
+    }
+
 
     deleteState(stateName) {
         let success = false;
@@ -222,8 +233,8 @@ export default class ReHoardPubSub {
         //Extract will subcribe for this instance
         let jedis = this._willSubscribeWhenAlive.filter((e) => { return e.name === state.name; });
 
-        //Remove jedis and update new queue
-        this._willSubscribeWhenAlive = this._willSubscribeWhenAlive.filter((e) => { return jedis.indexOf(e) < 0 })
+        //Remove jedis and update new queue.... BUG HERE
+        // this._willSubscribeWhenAlive = this._willSubscribeWhenAlive.filter((e) => { return jedis.indexOf(e) < 0 })
 
         //Append to subscriber
         state.subscribers = jedis.map((e) => {
@@ -329,7 +340,6 @@ export default class ReHoardPubSub {
         }
     }
 }
-
 
 
 

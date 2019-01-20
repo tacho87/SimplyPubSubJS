@@ -1,4 +1,14 @@
-import ReHoardPubSub from "./components/rehoardpubsub.js";
+# REHOARD
+
+## Introduction
+
+Rehoard IS a project built in 2015 as an alternative to redux for internal use only. It is a simply sub/pub for react or vanilla js. It support local/session storage with redo/undo of actions. 
+
+
+
+
+## Code Samples
+
 
 
 
@@ -72,5 +82,13 @@ export default class ReHoard {
         return this._reHoardPubSub.undo(stateName);
     }
 }
+
+
+
+
+## Installation
+
+npm install rehoard --save
+
 
 

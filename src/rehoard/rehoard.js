@@ -5,7 +5,6 @@ import ReHoardPubSub from "./components/rehoardpubsub.js";
 export default class ReHoard {
     constructor() {
         this._reHoardPubSub = new ReHoardPubSub();
-        window.StateHub = this;
     }
 
     /* Allow to change default settings. 
@@ -70,6 +69,11 @@ export default class ReHoard {
     // Undo the value to previous one
     undo(stateName) {
         return this._reHoardPubSub.undo(stateName);
+    }
+
+    // Prints all states
+    getStatesNames(){
+        return this._reHoardPubSub.getStatesNames();
     }
 }
 

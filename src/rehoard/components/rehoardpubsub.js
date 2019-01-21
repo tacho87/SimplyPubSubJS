@@ -28,6 +28,13 @@ export default class ReHoardPubSub {
             typeMutable: (settings && settings.typeMutable ? settings.typeMutable : false),
             production: (settings && settings.production ? settings.production : true)
         };
+
+        try {
+            let test = sessionStorage || localStorage;
+        } catch (e) {
+            this._settings.persist = false;
+            this._settings.persist = false;
+        }
         this._debug = new ConsoleMessages(this._settings.production);
     }
 
@@ -164,6 +171,13 @@ export default class ReHoardPubSub {
         return success;
     }
 
+    getStatesNames() {
+        let states = [];
+        for (var property in this._states) {
+            states.push(property);
+        }
+        return states;
+    }
 
 
 
@@ -277,53 +291,62 @@ export default class ReHoardPubSub {
     }
 
     _persistanceSave() {
-        if (this._settings.persistance.persist) {
-            let storage;
-            if (this._settings.persistance.session) {
-                storage = sessionStorage;
-            } else {
-                storage = localStorage;
+        try {
+            if (this._settings.persistance.persist) {
+                let storage;
+                if (this._settings.persistance.session) {
+                    storage = sessionStorage;
+                } else {
+                    storage = localStorage;
+                }
+                try {
+                    let data = {
+                        date: new Date(),
+                        states: this._states
+                    };
+                    storage.setItem(this._storageName, JSON.stringify(data));
+                } catch (e) {
+                    this._debug.log(e);
+                }
             }
-            try {
-                let data = {
-                    date: new Date(),
-                    states: this._states
-                };
-                storage.setItem(this._storageName, JSON.stringify(data));
-            } catch (e) {
-                console.log(e);
-            }
+        } catch (e) {
+            this._debug.log(e);
         }
     }
 
     _persistanceLoad() {
-        if (this._settings.persistance.persist) {
-            let storage;
-            if (this._settings.persistance.session) {
-                storage = sessionStorage;
-            } else {
-                storage = localStorage;
-            }
-            try {
-                let results = storage.getItem(this._storageName);
-                if (results) {
-                    let data = JSON.parse(results);
-                    let date = new Date(data.date);
-                    date.setDate(date.getDate() + this._settings.timeAlive);
-                    if (date < new Date()) {
-                        storage.removeItem(this._storageName);
-                    } else {
-
-                        let s = Object.assign({}, data.states);
-                        for (let x in s) {
-                            s[x].subscribers = [];
-                        }
-                        this._states = s;
-                    }
+        try {
+            if (this._settings.persistance.persist) {
+                let storage;
+                if (this._settings.persistance.session) {
+                    storage = sessionStorage;
+                } else {
+                    storage = localStorage;
                 }
-            } catch (e) {
-                this._debug.log(e);
+                try {
+                    let results = storage.getItem(this._storageName);
+                    if (results) {
+                        let data = JSON.parse(results);
+                        let date = new Date(data.date);
+                        date.setDate(date.getDate() + this._settings.timeAlive);
+                        if (date < new Date()) {
+                            storage.removeItem(this._storageName);
+                        } else {
+
+                            let s = Object.assign({}, data.states);
+                            for (let x in s) {
+                                s[x].subscribers = [];
+                            }
+                            this._states = s;
+                        }
+                    }
+                } catch (e) {
+                    this._debug.log(e);
+                }
             }
+        }
+        catch (e) {
+            this._debug.log(e);
         }
     }
 

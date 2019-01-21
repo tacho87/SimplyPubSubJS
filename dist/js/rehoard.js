@@ -92,7 +92,6 @@
 	        _classCallCheck(this, ReHoard);
 	
 	        this._reHoardPubSub = new _rehoardpubsub2.default();
-	        window.StateHub = this;
 	    }
 	
 	    /* Allow to change default settings. 
@@ -190,6 +189,14 @@
 	        value: function undo(stateName) {
 	            return this._reHoardPubSub.undo(stateName);
 	        }
+	
+	        // Prints all states
+	
+	    }, {
+	        key: "getStatesNames",
+	        value: function getStatesNames() {
+	            return this._reHoardPubSub.getStatesNames();
+	        }
 	    }]);
 	
 	    return ReHoard;
@@ -251,6 +258,13 @@
 	                typeMutable: settings && settings.typeMutable ? settings.typeMutable : false,
 	                production: settings && settings.production ? settings.production : true
 	            };
+	
+	            try {
+	                var test = sessionStorage || localStorage;
+	            } catch (e) {
+	                this._settings.persist = false;
+	                this._settings.persist = false;
+	            }
 	            this._debug = new _consolemessages2.default(this._settings.production);
 	        }
 	    }, {
@@ -401,6 +415,15 @@
 	            }
 	            return success;
 	        }
+	    }, {
+	        key: "getStatesNames",
+	        value: function getStatesNames() {
+	            var states = [];
+	            for (var property in this._states) {
+	                states.push(property);
+	            }
+	            return states;
+	        }
 	
 	        //Private
 	
@@ -518,54 +541,62 @@
 	    }, {
 	        key: "_persistanceSave",
 	        value: function _persistanceSave() {
-	            if (this._settings.persistance.persist) {
-	                var storage = void 0;
-	                if (this._settings.persistance.session) {
-	                    storage = sessionStorage;
-	                } else {
-	                    storage = localStorage;
+	            try {
+	                if (this._settings.persistance.persist) {
+	                    var storage = void 0;
+	                    if (this._settings.persistance.session) {
+	                        storage = sessionStorage;
+	                    } else {
+	                        storage = localStorage;
+	                    }
+	                    try {
+	                        var data = {
+	                            date: new Date(),
+	                            states: this._states
+	                        };
+	                        storage.setItem(this._storageName, JSON.stringify(data));
+	                    } catch (e) {
+	                        this._debug.log(e);
+	                    }
 	                }
-	                try {
-	                    var data = {
-	                        date: new Date(),
-	                        states: this._states
-	                    };
-	                    storage.setItem(this._storageName, JSON.stringify(data));
-	                } catch (e) {
-	                    console.log(e);
-	                }
+	            } catch (e) {
+	                this._debug.log(e);
 	            }
 	        }
 	    }, {
 	        key: "_persistanceLoad",
 	        value: function _persistanceLoad() {
-	            if (this._settings.persistance.persist) {
-	                var storage = void 0;
-	                if (this._settings.persistance.session) {
-	                    storage = sessionStorage;
-	                } else {
-	                    storage = localStorage;
-	                }
-	                try {
-	                    var results = storage.getItem(this._storageName);
-	                    if (results) {
-	                        var data = JSON.parse(results);
-	                        var date = new Date(data.date);
-	                        date.setDate(date.getDate() + this._settings.timeAlive);
-	                        if (date < new Date()) {
-	                            storage.removeItem(this._storageName);
-	                        } else {
-	
-	                            var s = Object.assign({}, data.states);
-	                            for (var x in s) {
-	                                s[x].subscribers = [];
-	                            }
-	                            this._states = s;
-	                        }
+	            try {
+	                if (this._settings.persistance.persist) {
+	                    var storage = void 0;
+	                    if (this._settings.persistance.session) {
+	                        storage = sessionStorage;
+	                    } else {
+	                        storage = localStorage;
 	                    }
-	                } catch (e) {
-	                    this._debug.log(e);
+	                    try {
+	                        var results = storage.getItem(this._storageName);
+	                        if (results) {
+	                            var data = JSON.parse(results);
+	                            var date = new Date(data.date);
+	                            date.setDate(date.getDate() + this._settings.timeAlive);
+	                            if (date < new Date()) {
+	                                storage.removeItem(this._storageName);
+	                            } else {
+	
+	                                var s = Object.assign({}, data.states);
+	                                for (var x in s) {
+	                                    s[x].subscribers = [];
+	                                }
+	                                this._states = s;
+	                            }
+	                        }
+	                    } catch (e) {
+	                        this._debug.log(e);
+	                    }
 	                }
+	            } catch (e) {
+	                this._debug.log(e);
 	            }
 	        }
 	    }, {

@@ -23,7 +23,6 @@ var ReHoard = function () {
         (0, _classCallCheck3.default)(this, ReHoard);
 
         this._reHoardPubSub = new _rehoardpubsub2.default();
-        window.StateHub = this;
     }
 
     /* Allow to change default settings. 
@@ -120,6 +119,14 @@ var ReHoard = function () {
         key: "undo",
         value: function undo(stateName) {
             return this._reHoardPubSub.undo(stateName);
+        }
+
+        // Prints all states
+
+    }, {
+        key: "getStatesNames",
+        value: function getStatesNames() {
+            return this._reHoardPubSub.getStatesNames();
         }
     }]);
     return ReHoard;

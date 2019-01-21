@@ -15,21 +15,25 @@ describe('ReHoard Global load check', () => {
 
 describe('ReHoard initialized check', () => {
     it('should exist', () => {
-        expect(window.ReHoard.subscribe).not.toBe(undefined);
+        let rehoard = new window.ReHoard();
+        expect(rehoard.subscribe).not.toBe(undefined);
     });
 });
 
 
-describe('ReHoard Should have one instance when calling ReHoard', () => {
-    it('Should be one instance', () => {
-        ReHoard.dispatch("IntanceTest", 1, "One Intance Test");
-        const ReHoard2 = require('../src/rehoard.js');
-        ReHoard2.dispatch("IntanceTest", 1, "One Intance Test");
+describe('ReHoard Should have multiple instances when calling ReHoard', () => {
+    it('Should be more than one instance', () => {
+        let rehoard = new window.ReHoard();
+        let rehoard2 = new window.ReHoard();
+        
+        rehoard.dispatch("IntanceTest", 1, "One Intance Test");
 
-        ReHoard2.subscribe("IntanceTest", (value) => {
-            expect(value).toBe(1);
+        rehoard2.dispatch("IntanceTest", 2, "One Intance Test");
+
+        rehoard2.subscribe("IntanceTest", (value) => {
+            expect(value).toBe(2);
         })
-        ReHoard.subscribe("IntanceTest", (value) => {
+        rehoard.subscribe("IntanceTest", (value) => {
             expect(value).toBe(1);
         })
     });
@@ -38,15 +42,16 @@ describe('ReHoard Should have one instance when calling ReHoard', () => {
 
 describe('Test multiple ReHoard.subscribers', () => {
     it('All subscribers should get the correct value', () => {
-        ReHoard.dispatch("MultipleSubscribers", "yes", "Initial Dispatch");
+        let rehoard = new window.ReHoard();
+        rehoard.dispatch("MultipleSubscribers", "yes", "Initial Dispatch");
 
         for (var i = 0; i < 100; i++) {
-            ReHoard.subscribe("MultipleSubscribers", (value) => {
+            rehoard.subscribe("MultipleSubscribers", (value) => {
                 expect(value).toBe("yes");
                 total++;
             });
         }
-        ReHoard.dispatch("MultipleSubscribers", "yes", "Second dispatch");
+        rehoard.dispatch("MultipleSubscribers", "yes", "Second dispatch");
     });
 });
 
@@ -54,42 +59,43 @@ describe('Test multiple ReHoard.subscribers', () => {
 
 describe('Stress Test multiple ReHoard.subscribers', () => {
     it('All subscribers should get the correct value', () => {
-        ReHoard.dispatch("StressMultipleSubscribers", "yes", "Initial Dispatch");
+        let rehoard = new window.ReHoard();
+        rehoard.dispatch("StressMultipleSubscribers", "yes", "Initial Dispatch");
 
         for (var i = 0; i < 10000; i++) {
-            ReHoard.subscribe("StressMultipleSubscribers", (value) => {
+            rehoard.subscribe("StressMultipleSubscribers", (value) => {
                 expect(value).toBe("yes");
             });
         }
-        ReHoard.dispatch("StressMultipleSubscribers", "yes", "Second dispatch");
-        ReHoard.dispatch("StressMultipleSubscribers2", "yes", "Initial dispatch");
+        rehoard.dispatch("StressMultipleSubscribers", "yes", "Second dispatch");
+        rehoard.dispatch("StressMultipleSubscribers2", "yes", "Initial dispatch");
 
         for (var i = 0; i < 10000; i++) {
-            ReHoard.subscribe("StressMultipleSubscribers2", (value) => {
+            rehoard.subscribe("StressMultipleSubscribers2", (value) => {
                 expect(value).toBe("yes");
             });
         }
-        ReHoard.dispatch("StressMultipleSubscribers2", "yes", "Second dispatch");
+        rehoard.dispatch("StressMultipleSubscribers2", "yes", "Second dispatch");
 
 
 
 
-        ReHoard.dispatch("StressMultipleSubscribers3", "yes", "Initial Dispatch");
+        rehoard.dispatch("StressMultipleSubscribers3", "yes", "Initial Dispatch");
 
         for (var i = 0; i < 10000; i++) {
-            ReHoard.subscribe("StressMultipleSubscribers3", (value) => {
+            rehoard.subscribe("StressMultipleSubscribers3", (value) => {
                 expect(value).toBe("yes");
             });
         }
-        ReHoard.dispatch("StressMultipleSubscribers3", "yes", "Second dispatch");
-        ReHoard.dispatch("StressMultipleSubscribers4", "yes", "Initial dispatch");
+        rehoard.dispatch("StressMultipleSubscribers3", "yes", "Second dispatch");
+        rehoard.dispatch("StressMultipleSubscribers4", "yes", "Initial dispatch");
 
         for (var i = 0; i < 10000; i++) {
-            ReHoard.subscribe("StressMultipleSubscribers4", (value) => {
+            rehoard.subscribe("StressMultipleSubscribers4", (value) => {
                 expect(value).toBe("yes");
             });
         }
-        ReHoard.dispatch("StressMultipleSubscribers4", "yes", "Second dispatch");
+        rehoard.dispatch("StressMultipleSubscribers4", "yes", "Second dispatch");
     });
 });
 

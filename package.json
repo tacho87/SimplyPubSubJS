@@ -1,6 +1,6 @@
 {
   "name": "rehoard",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "ReHoard is a pub/sub state management tool for ReactJs or Nodejs",
   "main": "./dist/import/rehoard.js",
   "scripts": {
@@ -49,9 +49,7 @@
     "babel-register": "^6.11.6",
     "jest-cli": "^14.1.0",
     "webpack": "^1.13.2",
-    "jasmine": "^2.4.1"
-  },
-  "dependencies": {
+    "jasmine": "^2.4.1",
     "babel-runtime": "^6.11.6"
   }
 }

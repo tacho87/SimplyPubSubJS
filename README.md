@@ -215,6 +215,6 @@ rehoard.dispatch("testOne", 10000, "Last value"); //console -> 10000
 ---
 ***Note 1:** I hate the name*
 
-***Note 2:** Not responsible for any damage or bug, it was never intended to be used by other people, but got 2.5k downloads over the years*
+***Note 2:** Not responsible for any damage or bug, it was never intended to be used by other people, but got 2.5k downloads over the years (probably bots)*
 
 ***Note 3:** Tests are busted at the moment, no async check. Will fix them later.*

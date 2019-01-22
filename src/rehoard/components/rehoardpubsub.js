@@ -70,41 +70,53 @@ export default class ReHoardPubSub {
         return success;
     }
 
-    subscribeWhenBecomesAlive(stateName, listener, unSubscribeCB) {
-        if (this._states.hasOwnProperty(stateName) && listener) {
-            return this.subscribe(stateName, listener);
-        } else {
+    subscribeWhenBecomesAlive(stateName, listener, unSubscribeCB = null) {
+
+        if (this._states.hasOwnProperty(stateName) && listener)
+            return this.subscribe(stateName, listener, unSubscribeCB);
+        else
             return this._willSubscribeWhenAlive.push({ name: stateName, listener: listener, unSubscribeCB: unSubscribeCB });
-        }
     }
 
-    subscribe(stateName, listener) {
+    subscribe(stateName, listener, unSubscribeCB) {
         if (this._states.hasOwnProperty(stateName) && listener) {
 
             let state = this._states[stateName];
-            let index = state.subscribers.push({
+
+            let uniqueId = Date.now();
+
+            state.subscribers.push({
                 listener: listener,
-                unSubscribeCB: undefined
+                unSubscribeCB: () => this._unSubscribe(stateName, uniqueId),
+                uniqueId: uniqueId
             });
+
             this._a_history(state, "Listener Subscribed");
+
             this._notifysubscribers(state);
+
             return {
-                unSubscribe: () => { this._unSubscribe(stateName, index) }
+                unSubscribe: () => this._unSubscribe(stateName, uniqueId)
             };
+
         } else {
             this._debug.warn(stateName + " does not exits yet... Cannot subscribe... :(");
+
             return false;
         }
     }
 
     broadcastState(stateName) {
+
         let success = false;
+
         if (this._states.hasOwnProperty(stateName)) {
             let state = this._states[stateName];
             this._notifysubscribers(state);
             success = true;
+
         } else {
-            this._debug.warn("getCurrentState failed to find state, check your state name")
+            this._debug.warn("broadcastState failed to find state, check your state name")
         }
         return success;
     }
@@ -143,7 +155,7 @@ export default class ReHoardPubSub {
                 state.value = s.value;
                 state.actionReference = s.actionReference;
                 this._a_history(state, "Redo");
-                this.getCurrentState(stateName);
+                this.broadcastState(stateName);
                 this._persistanceSave();
                 success = true;
             }
@@ -162,7 +174,7 @@ export default class ReHoardPubSub {
                 state.value = s.value;
                 state.actionReference = s.actionReference;
                 this._a_history(state, "Undo");
-                this.getCurrentState(stateName);
+                this.broadcastState(stateName);
                 this._persistanceSave();
                 success = true;
             }
@@ -183,11 +195,11 @@ export default class ReHoardPubSub {
 
     //Private
 
-    _unSubscribe(stateName, index) {
+    _unSubscribe(stateName, uniqueId) {
         let success = false;
-        if (this._states.hasOwnProperty(stateName) && stateName && index) {
+        if (this._states.hasOwnProperty(stateName) && stateName && uniqueId) {
             let state = this._states[stateName];
-            state.subscribers[index - 1] = null;
+            state.subscribers = state.subscribers.filter((e) => e.uniqueId !== uniqueId);
             this._a_history(state, "unSubcribed");
             success = true;
         }
@@ -254,7 +266,8 @@ export default class ReHoardPubSub {
         state.subscribers = jedis.map((e) => {
             return {
                 listener: e.listener,
-                unSubscribeCB: e.unSubscribeCB
+                unSubscribeCB: e.unSubscribeCB,
+                uniqueId: Date.now()
             }
         });
         //Notify new unsubcribe method.
@@ -262,7 +275,7 @@ export default class ReHoardPubSub {
             try {
                 if (e.unSubscribeCB) {
                     e.unSubscribeCB({
-                        unSubscribe: () => { this._unSubscribe(e.name, i) }
+                        unSubscribe: () => { this._unSubscribe(e.name, uniqueId) }
                     });
                 }
             } catch (o) {
@@ -275,18 +288,23 @@ export default class ReHoardPubSub {
     _notifysubscribers(state) {
         if (state && state.subscribers.length > 0) {
             for (var i = 0; i < state.subscribers.length; i++) {
-                try {
-                    if (state.subscribers[i] && state.subscribers[i].listener !== null) {
-                        state.subscribers[i].listener(state.value);
-                    }
-                }
-                catch (e) {
-                    this._debug.warn(state.subscribers[i].listener + " No longer in scope");
+                if (state.subscribers[i] && state.subscribers[i].listener !== null) {
+
+                    setTimeout(function (opt, value) {
+                        try {
+                            opt.listener(value);
+                        } catch (e) {
+                            this._debug.error(e);
+                        }
+                    }.bind(this, state.subscribers[i], state.value)
+                    , 0);
+
                 }
             }
-            this._a_history(state, "Notified Subscribers");
-
         }
+        this._a_history(state, "Notified Subscribers");
+
+
 
     }
 

@@ -37,8 +37,8 @@ export default class ReHoard {
     }
 
     // subcribes to an existing state, if it does not exists it will throw an exception. 
-    subscribe(stateName, listener) {
-        return this._reHoardPubSub.subscribe(stateName, listener);
+    subscribe(stateName, listener, unSubscribeCB) {
+        return this._reHoardPubSub.subscribe(stateName, listener, unSubscribeCB);
     }
 
     // will subscribe if the state exists, otherwise will queue it up once it is created. 

@@ -60,7 +60,7 @@ var ReHoard = function () {
     }, {
         key: "dispatch",
         value: function dispatch(stateName, stateValue) {
-            var actionReference = arguments.length <= 2 || arguments[2] === undefined ? "" : arguments[2];
+            var actionReference = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
 
             return this._reHoardPubSub.dispatch(stateName, stateValue, actionReference);
         }
@@ -69,8 +69,8 @@ var ReHoard = function () {
 
     }, {
         key: "subscribe",
-        value: function subscribe(stateName, listener) {
-            return this._reHoardPubSub.subscribe(stateName, listener);
+        value: function subscribe(stateName, listener, unSubscribeCB) {
+            return this._reHoardPubSub.subscribe(stateName, listener, unSubscribeCB);
         }
 
         // will subscribe if the state exists, otherwise will queue it up once it is created. 

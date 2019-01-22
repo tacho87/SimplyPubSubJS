@@ -129,7 +129,7 @@
 	    }, {
 	        key: "dispatch",
 	        value: function dispatch(stateName, stateValue) {
-	            var actionReference = arguments.length <= 2 || arguments[2] === undefined ? "" : arguments[2];
+	            var actionReference = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
 	
 	            return this._reHoardPubSub.dispatch(stateName, stateValue, actionReference);
 	        }
@@ -138,8 +138,8 @@
 	
 	    }, {
 	        key: "subscribe",
-	        value: function subscribe(stateName, listener) {
-	            return this._reHoardPubSub.subscribe(stateName, listener);
+	        value: function subscribe(stateName, listener, unSubscribeCB) {
+	            return this._reHoardPubSub.subscribe(stateName, listener, unSubscribeCB);
 	        }
 	
 	        // will subscribe if the state exists, otherwise will queue it up once it is created. 
@@ -217,7 +217,7 @@
 	    value: true
 	});
 	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
@@ -270,7 +270,7 @@
 	    }, {
 	        key: "dispatch",
 	        value: function dispatch(stateName, stateValue) {
-	            var actionReference = arguments.length <= 2 || arguments[2] === undefined ? "" : arguments[2];
+	            var actionReference = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
 	
 	            var success = false;
 	
@@ -303,53 +303,58 @@
 	        }
 	    }, {
 	        key: "subscribeWhenBecomesAlive",
-	        value: function subscribeWhenBecomesAlive(stateName, listener, unSubscribeCB) {
-	            if (this._states.hasOwnProperty(stateName) && listener) {
-	                return this.subscribe(stateName, listener);
-	            } else {
-	                return this._willSubscribeWhenAlive.push({ name: stateName, listener: listener, unSubscribeCB: unSubscribeCB });
-	            }
+	        value: function subscribeWhenBecomesAlive(stateName, listener) {
+	            var unSubscribeCB = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+	
+	
+	            if (this._states.hasOwnProperty(stateName) && listener) return this.subscribe(stateName, listener, unSubscribeCB);else return this._willSubscribeWhenAlive.push({ name: stateName, listener: listener, unSubscribeCB: unSubscribeCB });
 	        }
 	    }, {
 	        key: "subscribe",
-	        value: function subscribe(stateName, listener) {
+	        value: function subscribe(stateName, listener, unSubscribeCB) {
 	            var _this = this;
 	
 	            if (this._states.hasOwnProperty(stateName) && listener) {
-	                var _ret = function () {
 	
-	                    var state = _this._states[stateName];
-	                    var index = state.subscribers.push({
-	                        listener: listener,
-	                        unSubscribeCB: undefined
-	                    });
-	                    _this._a_history(state, "Listener Subscribed");
-	                    _this._notifysubscribers(state);
-	                    return {
-	                        v: {
-	                            unSubscribe: function unSubscribe() {
-	                                _this._unSubscribe(stateName, index);
-	                            }
-	                        }
-	                    };
-	                }();
+	                var state = this._states[stateName];
 	
-	                if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
+	                var _uniqueId = Date.now();
+	
+	                state.subscribers.push({
+	                    listener: listener,
+	                    unSubscribeCB: function unSubscribeCB() {
+	                        return _this._unSubscribe(stateName, _uniqueId);
+	                    },
+	                    uniqueId: _uniqueId
+	                });
+	
+	                this._a_history(state, "Listener Subscribed");
+	
+	                this._notifysubscribers(state);
+	
+	                return {
+	                    unSubscribe: function unSubscribe() {
+	                        return _this._unSubscribe(stateName, _uniqueId);
+	                    }
+	                };
 	            } else {
 	                this._debug.warn(stateName + " does not exits yet... Cannot subscribe... :(");
+	
 	                return false;
 	            }
 	        }
 	    }, {
 	        key: "broadcastState",
 	        value: function broadcastState(stateName) {
+	
 	            var success = false;
+	
 	            if (this._states.hasOwnProperty(stateName)) {
 	                var state = this._states[stateName];
 	                this._notifysubscribers(state);
 	                success = true;
 	            } else {
-	                this._debug.warn("getCurrentState failed to find state, check your state name");
+	                this._debug.warn("broadcastState failed to find state, check your state name");
 	            }
 	            return success;
 	        }
@@ -389,7 +394,7 @@
 	                    state.value = s.value;
 	                    state.actionReference = s.actionReference;
 	                    this._a_history(state, "Redo");
-	                    this.getCurrentState(stateName);
+	                    this.broadcastState(stateName);
 	                    this._persistanceSave();
 	                    success = true;
 	                }
@@ -408,7 +413,7 @@
 	                    state.value = s.value;
 	                    state.actionReference = s.actionReference;
 	                    this._a_history(state, "Undo");
-	                    this.getCurrentState(stateName);
+	                    this.broadcastState(stateName);
 	                    this._persistanceSave();
 	                    success = true;
 	                }
@@ -429,11 +434,13 @@
 	
 	    }, {
 	        key: "_unSubscribe",
-	        value: function _unSubscribe(stateName, index) {
+	        value: function _unSubscribe(stateName, uniqueId) {
 	            var success = false;
-	            if (this._states.hasOwnProperty(stateName) && stateName && index) {
+	            if (this._states.hasOwnProperty(stateName) && stateName && uniqueId) {
 	                var state = this._states[stateName];
-	                state.subscribers[index - 1] = null;
+	                state.subscribers = state.subscribers.filter(function (e) {
+	                    return e.uniqueId !== uniqueId;
+	                });
 	                this._a_history(state, "unSubcribed");
 	                success = true;
 	            } else {
@@ -504,7 +511,8 @@
 	            state.subscribers = jedis.map(function (e) {
 	                return {
 	                    listener: e.listener,
-	                    unSubscribeCB: e.unSubscribeCB
+	                    unSubscribeCB: e.unSubscribeCB,
+	                    uniqueId: Date.now()
 	                };
 	            });
 	            //Notify new unsubcribe method.
@@ -513,7 +521,7 @@
 	                    if (e.unSubscribeCB) {
 	                        e.unSubscribeCB({
 	                            unSubscribe: function unSubscribe() {
-	                                _this2._unSubscribe(e.name, i);
+	                                _this2._unSubscribe(e.name, uniqueId);
 	                            }
 	                        });
 	                    }
@@ -527,16 +535,19 @@
 	        value: function _notifysubscribers(state) {
 	            if (state && state.subscribers.length > 0) {
 	                for (var i = 0; i < state.subscribers.length; i++) {
-	                    try {
-	                        if (state.subscribers[i] && state.subscribers[i].listener !== null) {
-	                            state.subscribers[i].listener(state.value);
-	                        }
-	                    } catch (e) {
-	                        this._debug.warn(state.subscribers[i].listener + " No longer in scope");
+	                    if (state.subscribers[i] && state.subscribers[i].listener !== null) {
+	
+	                        setTimeout(function (opt, value) {
+	                            try {
+	                                opt.listener(value);
+	                            } catch (e) {
+	                                this._debug.error(e);
+	                            }
+	                        }.bind(this, state.subscribers[i], state.value), 0);
 	                    }
 	                }
-	                this._a_history(state, "Notified Subscribers");
 	            }
+	            this._a_history(state, "Notified Subscribers");
 	        }
 	    }, {
 	        key: "_persistanceSave",
@@ -639,7 +650,7 @@
 	
 	var ConsoleMessages = function () {
 	    function ConsoleMessages() {
-	        var production = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+	        var production = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 	
 	        _classCallCheck(this, ConsoleMessages);
 	
@@ -649,7 +660,7 @@
 	    _createClass(ConsoleMessages, [{
 	        key: "changeEnviroment",
 	        value: function changeEnviroment() {
-	            var production = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+	            var production = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 	
 	            this.production = production;
 	        }

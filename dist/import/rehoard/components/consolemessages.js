@@ -16,7 +16,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var ConsoleMessages = function () {
     function ConsoleMessages() {
-        var production = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+        var production = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
         (0, _classCallCheck3.default)(this, ConsoleMessages);
 
         this.production = production;
@@ -25,7 +25,7 @@ var ConsoleMessages = function () {
     (0, _createClass3.default)(ConsoleMessages, [{
         key: "changeEnviroment",
         value: function changeEnviroment() {
-            var production = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+            var production = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
             this.production = production;
         }

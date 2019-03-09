@@ -1,4 +1,4 @@
-# REHOARD
+# SimplyPubSubJs (REHOARD)
 
 ## Introduction
 
